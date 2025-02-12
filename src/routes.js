@@ -23,11 +23,12 @@ export const routes = [
     method: 'POST',
     path: buildRoutePath('/tasks'),
     handler: (req, res) => {
-      const { name, email } = req.body
+      const { title, email, description } = req.body
 
       const user = {
         id: randomUUID(),
-        name,
+        title,
+        description,
         email,
       }
 
