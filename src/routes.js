@@ -23,16 +23,18 @@ export const routes = [
     method: 'POST',
     path: buildRoutePath('/tasks'),
     handler: (req, res) => {
-      const { title, email, description } = req.body
+      const { title, description } = req.body
 
-      const user = {
+      const task = {
         id: randomUUID(),
         title,
         description,
-        email,
+        created_at: new Date(),
+        updated_at: null,
+        completed_at: null
       }
 
-      database.insert('tasks', user)
+      database.insert('tasks', task)
 
       return res.writeHead(201).end()
     }
@@ -42,14 +44,27 @@ export const routes = [
     path: buildRoutePath('/tasks/:id'),
     handler: (req, res) => {
       const { id } = req.params
-      const { name, email } = req.body
+      const { title, description } = req.body
+
+      if (!title && !description) {
+        return res.writeHead(400).end(
+          JSON.stringify({ message: 'O título ou a descrição é obrigatório' })
+        )
+      }
+
+      const [task] = database.select('tasks', { id })
+
+      if (!task) {
+        return res.writeHead(404).end(JSON.stringify({ message: "Tarefa não encontrada." }))
+      }
 
       database.update('tasks', id, {
-        name,
-        email,
+        title: title ?? task.title,
+        description: description ?? task.description,
+        updated_at: new Date()
       })
 
-      return res.writeHead(204).end()
+      return res.writeHead(204).end(JSON.stringify({ message: "Tarefa atualizada com sucesso!" }))
     }
   },
   {
@@ -58,9 +73,32 @@ export const routes = [
     handler: (req, res) => {
       const { id } = req.params
 
+      const [task] = database.select('tasks', { id })
+      
+      if (!task) {
+        return res.writeHead(404).end(JSON.stringify({ message: "Tarefa não encontrada." }))
+      }
+      
       database.delete('tasks', id)
 
-      return res.writeHead(204).end()
+      return res.writeHead(204).end(JSON.stringify({ message: "Tarefa deletada com sucesso."}))
+    }
+  },
+  {
+    method: 'PATCH',
+    path: buildRoutePath('/tasks/:id/complete'),
+    handler: (req, res) => {
+      const { id } = req.params
+
+      const [task] = database.select('tasks', { id })
+      
+      if (!task) {
+        return res.writeHead(404).end(JSON.stringify({ message: "Tarefa não encontrada." }))
+      }
+
+      database.patch('tasks', id)
+
+      return res.writeHead(204).end(JSON.stringify({ message: "Tarefa deletada com sucesso."}))
     }
   }
 ]

@@ -47,11 +47,40 @@ export class Database {
 
   update(table, id, data) {
     const rowIndex = this.#database[table].findIndex(row => row.id === id)
-
+    
     if (rowIndex > -1) {
-      this.#database[table][rowIndex] = { id, ...data }
+      const updatedAt = new Date()
+
+      const currentTask = this.#database[table][rowIndex]
+      
+      this.#database[table][rowIndex] = { 
+        ...currentTask,
+        ...data,
+        updated_at: updatedAt 
+      }
+     
       this.#persist()
     }
+  }
+  
+  patch(table, id, data) {
+    const rowIndex = this.#database[table].findIndex(row => row.id === id)
+    
+    if (rowIndex > -1) {
+      const updatedAt = new Date()
+
+      const currentTask = this.#database[table][rowIndex]
+      
+      this.#database[table][rowIndex] = { 
+        ...currentTask,
+        ...data,
+        updated_at: updatedAt,
+        completed_at: updatedAt 
+      }
+     
+      this.#persist()
+    }
+
   }
 
   delete(table, id) {
