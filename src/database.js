@@ -63,26 +63,6 @@ export class Database {
     }
   }
   
-  patch(table, id, data) {
-    const rowIndex = this.#database[table].findIndex(row => row.id === id)
-    
-    if (rowIndex > -1) {
-      const updatedAt = new Date()
-
-      const currentTask = this.#database[table][rowIndex]
-      
-      this.#database[table][rowIndex] = { 
-        ...currentTask,
-        ...data,
-        updated_at: updatedAt,
-        completed_at: updatedAt 
-      }
-     
-      this.#persist()
-    }
-
-  }
-
   delete(table, id) {
     const rowIndex = this.#database[table].findIndex(row => row.id === id)
 

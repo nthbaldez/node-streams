@@ -96,7 +96,11 @@ export const routes = [
         return res.writeHead(404).end(JSON.stringify({ message: "Tarefa não encontrada." }))
       }
 
-      database.patch('tasks', id)
+      const isTaskCompleted = !!task.completed_at
+
+      const completed_at = isTaskCompleted ? null : new Date()
+
+      database.update('tasks', id, { completed_at })
 
       return res.writeHead(204).end(JSON.stringify({ message: "Tarefa deletada com sucesso."}))
     }
