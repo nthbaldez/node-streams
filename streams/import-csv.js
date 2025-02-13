@@ -3,19 +3,21 @@ import { open } from 'node:fs/promises'
 
 const csvPath = new URL('tasks.csv', import.meta.url);
 
-const file = await open(csvPath)
+const file = await open('streams/tasks.csv')
 
-const stream = file.createReadStream(csvPath);
+const stream = file.createReadStream();
 
 const csvParse = parse({
   delimiter: ',',
   skipEmptyLines: true,
   fromLine: 2 // skip the header line
-});
+})
 
 async function run() {
   const linesParse = stream.pipe(csvParse);
 
+  console.log('Importando dados...')
+  
   for await (const line of linesParse) {
     const [title, description] = line;
 

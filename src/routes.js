@@ -16,7 +16,7 @@ export const routes = [
         email: search
       } : null)
 
-      return res.end(JSON.stringify(tasks))
+      return res.end(JSON.stringify({ totalCount: tasks.length, tasks }))
     }
   },
   {
